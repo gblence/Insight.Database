@@ -63,7 +63,10 @@ namespace Insight.Database.Reliable
 		/// <returns>A ReliableCommand.</returns>
 		protected override DbCommand CreateDbCommand()
 		{
-			return new ReliableCommand(RetryStrategy, this, InnerConnection.CreateCommand());
+            DbCommand command = InnerConnection.CreateCommand();
+            if (InnerTransaction != null)
+                command.Transaction = InnerTransaction;
+            return new ReliableCommand(RetryStrategy, this, command);
 		}
 
 #if !NODBASYNC
